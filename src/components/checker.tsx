@@ -162,6 +162,11 @@ const Checker = () => {
         if (activityModeManifest !== undefined && activityModeHash !== undefined && sessionStorage.getItem("lastHash") !== String(activityModeHash)) {
             const currentUnixTime = Math.floor(Date.now() / 1000);
 
+            console.log(activityModeManifest[activityModeHash] !== undefined && Number(sessionStorage.getItem("lastTime")) < activityTime && currentUnixTime - activityTime < 60)
+            console.log(activityModeManifest[activityModeHash] !== undefined)
+            console.log(Number(sessionStorage.getItem("lastTime")) < activityTime)
+            console.log(currentUnixTime - activityTime < 60)
+
             if (activityModeManifest[activityModeHash] !== undefined && Number(sessionStorage.getItem("lastTime")) < activityTime && currentUnixTime - activityTime < 60) {
 
                 console.log(`Playing ${activityModeManifest[activityModeHash].friendlyName}`)

@@ -219,6 +219,7 @@ const Checker = () => {
         <div>
             <p>Welcome to Bungie OAuth</p>
             <a href={authUrl}>Login with Bungie</a>
+            <p>Display Name: {userData?.bungieNetUser.displayName}</p>
             <p>Bungie Membership ID: {localStorage.getItem("bungieMembershipId")}</p>
             <p>Primary Membership ID: {primaryMembershipId}</p>
             <p>Primary Membership Type: {primaryMembershipType}</p>

@@ -11,11 +11,14 @@ const Checker = () => {
     const location = useLocation();
 
     const [primaryMembershipId, setPrimaryMembershipId] = React.useState("")
-    const [activityModeManifest, setActivityModeManifest] = React.useState<ActivityModes>()
     const [primaryMembershipType, setPrimaryMembershipType] = React.useState("")
     const [currentActivity, setCurrentActivity] = React.useState("")
+
+    const [activityModeManifest, setActivityModeManifest] = React.useState<ActivityModes>()
     const [activityHash, setActivityHash] = React.useState<number>()
     const [activityModeHash, setActivityModeHash] = React.useState<number>()
+    const [activityTime, setActivityTime] = React.useState<number>(0)
+
     const [userData, setUserData] = React.useState<membershipData>()
     const [activityData, setActivityData] = React.useState<activitiesComponent>()
 
@@ -77,6 +80,11 @@ const Checker = () => {
     React.useEffect(() => {
 
         if (userData !== undefined) {
+            if (userData.destinyMemberships.length === 1) {
+                let currentMembership = userData.destinyMemberships[0]
+                setPrimaryMembershipId(currentMembership.membershipId)
+                setPrimaryMembershipType(currentMembership.membershipType)
+            }
             for (let i = 0; i < userData.destinyMemberships.length; i++) {
                 let currentMembership = userData.destinyMemberships[i]
                 if (currentMembership.membershipId === userData.primaryMembershipId) {
@@ -90,27 +98,29 @@ const Checker = () => {
     }, [userData])
 
     React.useEffect(() => {
+        // Function to fetch data
+        const fetchData = async () => {
+            if (primaryMembershipId !== "") {
+                try {
+                    const response = await axios.get(`${apiRoot}/Destiny2/${primaryMembershipType}/Profile/${primaryMembershipId}/?components=204`, {
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                            'X-API-Key': 'dcf079d10b534c00b8b9f772a1503dd9',
+                            'Authorization': `Bearer ${localStorage.getItem("accessToken")}`
+                        }
+                    });
 
-        if (primaryMembershipId !== "") {
-            axios.get(`${apiRoot}/Destiny2/${primaryMembershipType}/Profile/${primaryMembershipId}/?components=204`, {
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                    'X-API-Key': 'dcf079d10b534c00b8b9f772a1503dd9',
-                    'Authorization': `Bearer ${localStorage.getItem("accessToken")}`
-                }
-            })
-                .then(response => {
-
-                    setActivityData(response.data["Response"])
-                    console.log(response.data["Response"])
-
-                })
-                .catch(error => {
+                    setActivityData(response.data["Response"]);
+                    console.log(response.data["Response"]);
+                } catch (error) {
                     console.error('Error getting access token:', error);
-                });
-        }
+                }
+            }
+        };
 
-    }, [primaryMembershipId])
+        setInterval(fetchData, 5000);
+
+    }, [primaryMembershipId]);
 
     React.useEffect(() => {
 
@@ -119,8 +129,12 @@ const Checker = () => {
                 let currentCharacterActivity = activityData.characterActivities.data[key]
                 if (currentCharacterActivity.currentActivityHash !== 0) {
 
+                    const unixTimestamp = Date.parse(currentCharacterActivity.dateActivityStarted) / 1000; // Convert milliseconds to seconds
+                    console.log(unixTimestamp)
+
                     setActivityHash(currentCharacterActivity.currentActivityHash)
                     setActivityModeHash(currentCharacterActivity.currentActivityModeHash)
+                    setActivityTime(unixTimestamp)
 
                     break
                 }
@@ -145,24 +159,33 @@ const Checker = () => {
 
     React.useEffect(() => {
 
-        if (activityModeManifest !== undefined && activityModeHash !== undefined) {
+        if (activityModeManifest !== undefined && activityModeHash !== undefined && sessionStorage.getItem("lastHash") !== String(activityModeHash)) {
+            const currentUnixTime = Math.floor(Date.now() / 1000);
 
-            if (activityModeManifest[activityModeHash] !== undefined) {
+            if (activityModeManifest[activityModeHash] !== undefined && Number(sessionStorage.getItem("lastTime")) < activityTime && currentUnixTime - activityTime < 60) {
 
                 console.log(`Playing ${activityModeManifest[activityModeHash].friendlyName}`)
                 setCurrentActivity(activityModeManifest[activityModeHash].friendlyName)
-                showNotification()
+                sessionStorage.setItem("lastHash", String(activityModeHash))
+                sessionStorage.setItem("lastTime", String(activityTime))
+                showNotification(activityModeManifest[activityModeHash].friendlyName)
+            } else if (activityModeHash === 2166136261 && Number(sessionStorage.getItem("lastTime")) < activityTime && currentUnixTime - activityTime < 60) {
+                console.log(`In orbit`)
+                setCurrentActivity("Orbit")
+                sessionStorage.setItem("lastHash", "Orbit")
+                sessionStorage.setItem("lastTime", String(activityTime))
+                showNotification("Orbit")
             }
         }
 
     }, [activityModeManifest])
 
 
-    const showNotification = () => {
+    const showNotification = (activity: string) => {
         if (Notification.permission === 'granted') {
             // If permission is granted, create and show the notification
             const notification = new Notification('My Notification', {
-                body: 'You have a game!!',
+                body: `You have a ${activity} game!!`,
             });
 
             // You can also add event listeners to handle user interaction with the notification
@@ -173,7 +196,7 @@ const Checker = () => {
             // If permission is not denied, request permission from the user
             Notification.requestPermission().then(permission => {
                 if (permission === 'granted') {
-                    showNotification();
+                    showNotification(activity);
                 }
             });
         }

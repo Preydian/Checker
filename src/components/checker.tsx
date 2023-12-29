@@ -130,7 +130,6 @@ const Checker = () => {
                 if (currentCharacterActivity.currentActivityHash !== 0) {
 
                     const unixTimestamp = Date.parse(currentCharacterActivity.dateActivityStarted) / 1000; // Convert milliseconds to seconds
-                    console.log(unixTimestamp)
 
                     setActivityHash(currentCharacterActivity.currentActivityHash)
                     setActivityModeHash(currentCharacterActivity.currentActivityModeHash)
@@ -159,7 +158,7 @@ const Checker = () => {
 
     React.useEffect(() => {
 
-        if (activityModeManifest !== undefined && activityModeHash !== undefined && sessionStorage.getItem("lastHash") !== String(activityModeHash)) {
+        if (activityModeManifest !== undefined && activityModeHash !== undefined) {
             const currentUnixTime = Math.floor(Date.now() / 1000);
 
             if (activityModeManifest[activityModeHash] !== undefined && Number(sessionStorage.getItem("lastTime")) < activityTime && currentUnixTime - activityTime < 60) {

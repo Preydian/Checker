@@ -169,6 +169,11 @@ const Checker = () => {
             console.log(currentUnixTime)
             console.log(activityTime)
 
+            console.log("2nd")
+            console.log(activityModeHash)
+            console.log(Number(sessionStorage.getItem("lastTime")))
+            console.log(activityTime)
+
             if (activityModeManifest[activityModeHash] !== undefined && Number(sessionStorage.getItem("lastTime")) < activityTime && currentUnixTime - activityTime < 60) {
 
                 console.log(`Playing ${activityModeManifest[activityModeHash].friendlyName}`)

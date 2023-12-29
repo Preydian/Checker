@@ -162,7 +162,6 @@ const Checker = () => {
         if (activityModeManifest !== undefined && activityModeHash !== undefined && sessionStorage.getItem("lastHash") !== String(activityModeHash)) {
             const currentUnixTime = Math.floor(Date.now() / 1000);
 
-
             if (activityModeManifest[activityModeHash] !== undefined && Number(sessionStorage.getItem("lastTime")) < activityTime && currentUnixTime - activityTime < 60) {
 
                 console.log(`Playing ${activityModeManifest[activityModeHash].friendlyName}`)
@@ -170,13 +169,13 @@ const Checker = () => {
                 sessionStorage.setItem("lastHash", String(activityModeHash))
                 sessionStorage.setItem("lastTime", String(activityTime))
                 showNotification(activityModeManifest[activityModeHash].friendlyName)
-            } else if (activityModeHash === 2166136261) {
+            } else if (activityModeHash === 2166136261 && Number(sessionStorage.getItem("lastTime")) < activityTime) {
                 console.log(`In orbit`)
                 setCurrentActivity("Orbit")
                 sessionStorage.setItem("lastHash", "Orbit")
                 sessionStorage.setItem("lastTime", String(activityTime))
                 showNotification("Orbit")
-            } else if (activityModeHash === 1589650888) {
+            } else if (activityModeHash === 1589650888 && Number(sessionStorage.getItem("lastTime")) < activityTime) {
                 console.log(`In a Social Area`)
                 setCurrentActivity("Social")
                 sessionStorage.setItem("lastHash", "Social")

@@ -189,17 +189,33 @@ const Checker = () => {
 
     const showNotification = (activity: string) => {
         if (Notification.permission === 'granted') {
-            // If permission is granted, create and show the notification
-            const notification = new Notification('My Notification', {
-                body: `You have a ${activity} game!!`,
-            });
+            let notification;
+            switch(activity) {
+                case "Orbit": {
+                    notification = new Notification('My Notification', {
+                        body: `You're travelling to orbit!!`,
+                    });
+                    break;
+                }
+                case "Social": {
+                    notification = new Notification('My Notification', {
+                        body: `You're travelling to a social space!!`,
+                    });
+                    break;
+                }
+                default: {
+                    notification = new Notification('My Notification', {
+                        body: `You have a ${activity} game!!`,
+                    });
+                    break;
+                }
+            }
 
-            // You can also add event listeners to handle user interaction with the notification
             notification.onclick = () => {
                 console.log('Notification clicked!');
             };
         } else if (Notification.permission !== 'denied') {
-            // If permission is not denied, request permission from the user
+
             Notification.requestPermission().then(permission => {
                 if (permission === 'granted') {
                     showNotification(activity);

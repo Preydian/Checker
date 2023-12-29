@@ -182,6 +182,12 @@ const Checker = () => {
                 sessionStorage.setItem("lastHash", "Orbit")
                 sessionStorage.setItem("lastTime", String(activityTime))
                 showNotification("Orbit")
+            } else if (activityModeHash === 1589650888 && Number(sessionStorage.getItem("lastTime")) < activityTime) {
+                console.log(`In a Social Area`)
+                setCurrentActivity("Social")
+                sessionStorage.setItem("lastHash", "Social")
+                sessionStorage.setItem("lastTime", String(activityTime))
+                showNotification("Social")
             }
         }
 

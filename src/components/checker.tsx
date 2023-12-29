@@ -159,6 +159,12 @@ const Checker = () => {
 
     React.useEffect(() => {
 
+        console.log("1st")
+        console.log(activityModeManifest)
+        console.log(activityModeHash)
+        console.log(sessionStorage.getItem("lastHash"))
+        console.log(String(activityModeHash))
+
         if (activityModeManifest !== undefined && activityModeHash !== undefined && sessionStorage.getItem("lastHash") !== String(activityModeHash)) {
             const currentUnixTime = Math.floor(Date.now() / 1000);
 

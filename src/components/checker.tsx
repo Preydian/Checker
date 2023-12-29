@@ -11,8 +11,9 @@ const Checker = () => {
     const location = useLocation();
 
     const [primaryMembershipId, setPrimaryMembershipId] = React.useState("")
-    const [activityModeManifest, setActivityModeManifest] = React.useState()
+    const [activityModeManifest, setActivityModeManifest] = React.useState<ActivityModes>()
     const [primaryMembershipType, setPrimaryMembershipType] = React.useState("")
+    const [currentActivity, setCurrentActivity] = React.useState("")
     const [activityHash, setActivityHash] = React.useState<number>()
     const [activityModeHash, setActivityModeHash] = React.useState<number>()
     const [userData, setUserData] = React.useState<membershipData>()
@@ -101,6 +102,7 @@ const Checker = () => {
                 .then(response => {
 
                     setActivityData(response.data["Response"])
+                    console.log(response.data["Response"])
 
                 })
                 .catch(error => {
@@ -132,7 +134,6 @@ const Checker = () => {
         axios.get(`${baseManifestUrl}/common/destiny2_content/json/en/DestinyActivityModeDefinition-a160e00f-0743-4edb-a4d6-86452656ed54.json`)
             .then(response => {
 
-                console.log(response.data)
                 setActivityModeManifest(response.data)
 
             })
@@ -142,6 +143,41 @@ const Checker = () => {
 
     }, [activityModeHash])
 
+    React.useEffect(() => {
+
+        if (activityModeManifest !== undefined && activityModeHash !== undefined) {
+
+            if (activityModeManifest[activityModeHash] !== undefined) {
+
+                console.log(`Playing ${activityModeManifest[activityModeHash].friendlyName}`)
+                setCurrentActivity(activityModeManifest[activityModeHash].friendlyName)
+                showNotification()
+            }
+        }
+
+    }, [activityModeManifest])
+
+
+    const showNotification = () => {
+        if (Notification.permission === 'granted') {
+            // If permission is granted, create and show the notification
+            const notification = new Notification('My Notification', {
+                body: 'You have a game!!',
+            });
+
+            // You can also add event listeners to handle user interaction with the notification
+            notification.onclick = () => {
+                console.log('Notification clicked!');
+            };
+        } else if (Notification.permission !== 'denied') {
+            // If permission is not denied, request permission from the user
+            Notification.requestPermission().then(permission => {
+                if (permission === 'granted') {
+                    showNotification();
+                }
+            });
+        }
+    };
 
     return (
         <div>
@@ -150,6 +186,10 @@ const Checker = () => {
             <p>Bungie Membership ID: {localStorage.getItem("bungieMembershipId")}</p>
             <p>Primary Membership ID: {primaryMembershipId}</p>
             <p>Primary Membership Type: {primaryMembershipType}</p>
+            <div style={{display: 'flex', alignItems: 'center'}}>
+                <strong style={{marginRight: '8px'}}>Playing:</strong>
+                <div>{currentActivity}</div>
+            </div>
         </div>
     );
 }

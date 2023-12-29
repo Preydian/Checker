@@ -10,14 +10,11 @@ const Checker = () => {
     const authUrl = `https://www.bungie.net/en/oauth/authorize?client_id=45985&response_type=code`;
     const location = useLocation();
 
-    const [accessToken, setAccessToken] = React.useState(null)
-    const [bungieMembershipId, setBungieMembershipId] = React.useState(null)
     const [primaryMembershipId, setPrimaryMembershipId] = React.useState("")
     const [activityModeManifest, setActivityModeManifest] = React.useState()
     const [primaryMembershipType, setPrimaryMembershipType] = React.useState("")
     const [activityHash, setActivityHash] = React.useState<number>()
     const [activityModeHash, setActivityModeHash] = React.useState<number>()
-    const [refreshToken, setRefreshToken] = React.useState(null)
     const [userData, setUserData] = React.useState<membershipData>()
     const [activityData, setActivityData] = React.useState<activitiesComponent>()
 
@@ -43,9 +40,9 @@ const Checker = () => {
             })
                 .then(response => {
 
-                    setAccessToken(response.data["access_token"])
-                    setBungieMembershipId(response.data["membership_id"])
-                    setRefreshToken(response.data["refresh_token"])
+                    localStorage.setItem("accessToken",response.data["access_token"])
+                    localStorage.setItem("bungieMembershipId",response.data["membership_id"])
+                    localStorage.setItem("refreshToken",response.data["refresh_token"])
 
                 })
                 .catch(error => {
@@ -55,6 +52,7 @@ const Checker = () => {
     }, [location.search]);
 
     React.useEffect(() => {
+        let bungieMembershipId = localStorage.getItem("bungieMembershipId")
 
         if (bungieMembershipId !== null) {
             axios.get(`${apiRoot}/User/GetMembershipsById/${bungieMembershipId}/${254}/`, {
@@ -73,7 +71,7 @@ const Checker = () => {
                 });
         }
 
-    }, [accessToken])
+    }, [localStorage.getItem("accessToken")])
 
     React.useEffect(() => {
 
@@ -97,7 +95,7 @@ const Checker = () => {
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
                     'X-API-Key': 'dcf079d10b534c00b8b9f772a1503dd9',
-                    'Authorization': `Bearer ${accessToken}`
+                    'Authorization': `Bearer ${localStorage.getItem("accessToken")}`
                 }
             })
                 .then(response => {
@@ -149,7 +147,7 @@ const Checker = () => {
         <div>
             <p>Welcome to Bungie OAuth</p>
             <a href={authUrl}>Login with Bungie</a>
-            <p>Bungie Membership ID: {bungieMembershipId}</p>
+            <p>Bungie Membership ID: {localStorage.getItem("bungieMembershipId")}</p>
             <p>Primary Membership ID: {primaryMembershipId}</p>
             <p>Primary Membership Type: {primaryMembershipType}</p>
         </div>

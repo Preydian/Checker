@@ -169,7 +169,7 @@ const Checker = () => {
                 sessionStorage.setItem("lastHash", String(activityModeHash))
                 sessionStorage.setItem("lastTime", String(activityTime))
                 showNotification(activityModeManifest[activityModeHash].friendlyName)
-            } else if (activityModeHash === 2166136261 && Number(sessionStorage.getItem("lastTime")) < activityTime && currentUnixTime - activityTime < 60) {
+            } else if (activityModeHash === 2166136261 && Number(sessionStorage.getItem("lastTime")) < activityTime) {
                 console.log(`In orbit`)
                 setCurrentActivity("Orbit")
                 sessionStorage.setItem("lastHash", "Orbit")

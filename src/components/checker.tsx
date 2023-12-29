@@ -159,26 +159,9 @@ const Checker = () => {
 
     React.useEffect(() => {
 
-        console.log("1st")
-        console.log(activityModeManifest)
-        console.log(activityModeHash)
-        console.log(sessionStorage.getItem("lastHash"))
-        console.log(String(activityModeHash))
-
         if (activityModeManifest !== undefined && activityModeHash !== undefined && sessionStorage.getItem("lastHash") !== String(activityModeHash)) {
             const currentUnixTime = Math.floor(Date.now() / 1000);
 
-            console.log(activityModeManifest[activityModeHash] !== undefined && Number(sessionStorage.getItem("lastTime")) < activityTime && currentUnixTime - activityTime < 60)
-            console.log(activityModeManifest[activityModeHash] !== undefined)
-            console.log(Number(sessionStorage.getItem("lastTime")) < activityTime)
-            console.log(currentUnixTime - activityTime < 60)
-            console.log(currentUnixTime)
-            console.log(activityTime)
-
-            console.log("2nd")
-            console.log(activityModeHash)
-            console.log(Number(sessionStorage.getItem("lastTime")))
-            console.log(activityTime)
 
             if (activityModeManifest[activityModeHash] !== undefined && Number(sessionStorage.getItem("lastTime")) < activityTime && currentUnixTime - activityTime < 60) {
 

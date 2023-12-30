@@ -1,16 +1,15 @@
 import axios from 'axios';
 import React from "react";
 import {useLocation, useNavigate} from "react-router-dom";
+import {showNotification} from "../helpers/notification";
+import {apiRoot, baseManifestUrl, tokenUrl} from "../helpers/constants";
 
 
 const Checker = () => {
 
-    const baseManifestUrl = "https://www.bungie.net/"
-    const apiRoot = "https://www.bungie.net/Platform"
-    const tokenUrl = 'https://www.bungie.net/Platform/App/Oauth/Token/';
+
     const location = useLocation();
     const navigate = useNavigate()
-
 
     const [primaryMembershipId, setPrimaryMembershipId] = React.useState("")
     const [primaryMembershipType, setPrimaryMembershipType] = React.useState("")
@@ -25,6 +24,10 @@ const Checker = () => {
     const [userData, setUserData] = React.useState<membershipData>()
     const [activityData, setActivityData] = React.useState<activitiesComponent>()
 
+    /**
+     * Handles oAuth authorization
+     * Triggers: When URL changes, relies on the 'code' search parameter from the bungie login client
+     */
     React.useEffect(() => {
 
         const urlSearchParams = new URLSearchParams(location.search);
@@ -64,6 +67,10 @@ const Checker = () => {
         }
     }, [location.search]);
 
+    /**
+     * Gets the users data using the membership_id returned after successful oAuth verification
+     * Trigger: The accessToken is updated
+     */
     React.useEffect(() => {
         let bungieMembershipId = localStorage.getItem("bungieMembershipId")
 
@@ -86,6 +93,10 @@ const Checker = () => {
 
     }, [localStorage.getItem("accessToken")])
 
+    /**
+     * Finds the users primary/main membership_type (Xbox, PSN, Steam, etc.) and their membership_id
+     * Trigger: The userData is updated
+     */
     React.useEffect(() => {
 
         if (userData !== undefined) {
@@ -106,12 +117,15 @@ const Checker = () => {
 
     }, [userData])
 
+    /**
+     * Gets the activity data for the current user, runs every 5 seconds
+     * Trigger: The primaryMembershipId is updated
+     */
     React.useEffect(() => {
 
         const fetchData = async () => {
 
-            const currentTimeMillis: number = new Date().getTime();
-            const currentTimeSeconds: number = Math.floor(currentTimeMillis / 1000)
+            const currentTimeSeconds: number = Math.floor(new Date().getTime() / 1000)
 
             if (currentTimeSeconds - Number(localStorage.getItem("tokenGrantedTime")) > (Number(localStorage.getItem("expiresIn")) - 10)) {
                 console.log("Refreshing token")
@@ -142,6 +156,10 @@ const Checker = () => {
 
     }, [primaryMembershipId]);
 
+    /**
+     * Checks if an activity is being played and extracts the associated hashes
+     * Trigger: The users activityData is updated
+     */
     React.useEffect(() => {
 
         if (activityData !== undefined) {
@@ -162,6 +180,10 @@ const Checker = () => {
 
     }, [activityData])
 
+    /**
+     * Gets the activity mode manifest JSON file
+     * Trigger: The activityModeHash is updated
+     */
     React.useEffect(() => {
 
         axios.get(`${baseManifestUrl}/common/destiny2_content/json/en/DestinyActivityModeDefinition-a160e00f-0743-4edb-a4d6-86452656ed54.json`)
@@ -176,6 +198,10 @@ const Checker = () => {
 
     }, [activityModeHash])
 
+    /**
+     * Checks if a new activity is starting and handles accordingly
+     * Trigger: The activityModeManifest is updated
+     */
     React.useEffect(() => {
 
         if (activityModeManifest !== undefined && activityModeHash !== undefined) {
@@ -190,12 +216,14 @@ const Checker = () => {
                 sessionStorage.setItem("lastHash", String(activityModeHash))
                 sessionStorage.setItem("lastTime", String(activityTime))
                 showNotification(activityModeManifest[activityModeHash].friendlyName)
+
             } else if (activityModeHash === 2166136261 && Number(sessionStorage.getItem("lastTime")) <= activityTime && sessionStorage.getItem("lastHash") !== "Orbit") {
                 console.log(`In orbit`)
                 setCurrentActivity("Orbit")
                 sessionStorage.setItem("lastHash", "Orbit")
                 sessionStorage.setItem("lastTime", String(activityTime))
                 showNotification("Orbit")
+
             } else if (activityModeHash === 1589650888 && Number(sessionStorage.getItem("lastTime")) <= activityTime && sessionStorage.getItem("lastHash") !== "Social") {
                 console.log(`In a Social Area`)
                 setCurrentActivity("Social")
@@ -207,44 +235,9 @@ const Checker = () => {
 
     }, [activityModeManifest])
 
-
-    const showNotification = (activity: string) => {
-        if (Notification.permission === 'granted') {
-            let notification;
-            switch(activity) {
-                case "Orbit": {
-                    notification = new Notification('My Notification', {
-                        body: `You're travelling to orbit!!`,
-                    });
-                    break;
-                }
-                case "Social": {
-                    notification = new Notification('My Notification', {
-                        body: `You're travelling to a social space!!`,
-                    });
-                    break;
-                }
-                default: {
-                    notification = new Notification('My Notification', {
-                        body: `You have a ${activity} game!!`,
-                    });
-                    break;
-                }
-            }
-
-            notification.onclick = () => {
-                console.log('Notification clicked!');
-            };
-        } else if (Notification.permission !== 'denied') {
-
-            Notification.requestPermission().then(permission => {
-                if (permission === 'granted') {
-                    showNotification(activity);
-                }
-            });
-        }
-    };
-
+    /**
+     * Refreshes the access token
+     */
     const refreshToken = async () => {
 
         const body = new URLSearchParams({
@@ -265,8 +258,7 @@ const Checker = () => {
                 localStorage.setItem("bungieMembershipId",response.data["membership_id"])
                 localStorage.setItem("refreshToken",response.data["refresh_token"])
 
-                const currentTimeMillis: number = new Date().getTime();
-                const currentTimeSeconds: number = Math.floor(currentTimeMillis / 1000)
+                const currentTimeSeconds: number = Math.floor(new Date().getTime() / 1000)
 
                 localStorage.setItem("tokenGrantedTime", String(currentTimeSeconds))
                 setNewClient(false)
@@ -278,6 +270,9 @@ const Checker = () => {
 
     }
 
+    /**
+     * Redirects the user to the bungie sign in client and removes API information just in case
+     */
     const signIn = () => {
         sessionStorage.removeItem("lastHash")
         sessionStorage.removeItem("lastTime")
@@ -287,6 +282,9 @@ const Checker = () => {
         window.location.href = `https://www.bungie.net/en/oauth/authorize?client_id=45985&response_type=code&reauth=${newClient}`
     }
 
+    /**
+     * Signs the user out by removing the required API information
+     */
     const signOut = () => {
         setNewClient(true)
         sessionStorage.removeItem("lastHash")

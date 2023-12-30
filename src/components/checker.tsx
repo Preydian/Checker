@@ -1,6 +1,6 @@
 import axios from 'axios';
 import React from "react";
-import {useLocation} from "react-router-dom";
+import {useLocation, useNavigate} from "react-router-dom";
 
 
 const Checker = () => {
@@ -9,10 +9,13 @@ const Checker = () => {
     const apiRoot = "https://www.bungie.net/Platform"
     const authUrl = `https://www.bungie.net/en/oauth/authorize?client_id=45985&response_type=code`;
     const location = useLocation();
+    const navigate = useNavigate()
+
 
     const [primaryMembershipId, setPrimaryMembershipId] = React.useState("")
     const [primaryMembershipType, setPrimaryMembershipType] = React.useState("")
     const [currentActivity, setCurrentActivity] = React.useState("")
+    const [newClient, setNewClient] = React.useState<boolean>(true)
 
     const [activityModeManifest, setActivityModeManifest] = React.useState<ActivityModes>()
     const [activityHash, setActivityHash] = React.useState<number>()
@@ -47,6 +50,7 @@ const Checker = () => {
                     localStorage.setItem("accessToken",response.data["access_token"])
                     localStorage.setItem("bungieMembershipId",response.data["membership_id"])
                     localStorage.setItem("refreshToken",response.data["refresh_token"])
+                    setNewClient(false)
 
                 })
                 .catch(error => {
@@ -225,6 +229,20 @@ const Checker = () => {
         }
     };
 
+    const signIn = () => {
+        window.location.href = `https://www.bungie.net/en/oauth/authorize?client_id=45985&response_type=code&reauth=${newClient}`
+    }
+
+    const signOut = () => {
+        setNewClient(true)
+        sessionStorage.removeItem("lastHash")
+        sessionStorage.removeItem("lastTime")
+        localStorage.removeItem("accessToken")
+        localStorage.removeItem("bungieMembershipId")
+        localStorage.removeItem("refreshToken")
+        navigate("/")
+    }
+
     return (
         <div>
             <h2 className="description d-flex align-content-center justify-content-center">
@@ -249,9 +267,12 @@ const Checker = () => {
                 <br/>
                 You will receive the first notification relatively quickly, this will be for your current activity.
             </p>
-            <a className="btn btn-primary mb-2" role="button" href={authUrl}>
+            <div className="btn btn-primary m-2" role="button" onClick={(event) => signIn()}>
                 Login with Bungie
-            </a>
+            </div>
+            <div className="btn btn-danger m-2" role="button" onClick={(event) => signOut()}>
+                Sign Out
+            </div>
 
             <div style={{display: 'flex', alignItems: 'center'}}>
                 <strong className="description" style={{marginRight: '8px'}}>

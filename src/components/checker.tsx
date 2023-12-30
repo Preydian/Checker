@@ -227,8 +227,30 @@ const Checker = () => {
 
     return (
         <div>
-            <p>Welcome to Bungie OAuth</p>
-            <a href={authUrl}>Login with Bungie</a>
+            <h2>
+                Welcome to Destiny Queue Checker
+            </h2>
+            <p>
+                How it works
+            </p>
+            <ol>
+                <li>
+                    Login
+                </li>
+                <li>
+                    Allow notifications
+                </li>
+                <li>
+                    Leave the tab running in the background
+                </li>
+            </ol>
+            <p>
+                When you change activity you will receive a notification telling you what activity is about to start.
+                <br/>
+                You will receive the first notification relatively quickly, this will be for your current activity.
+            </p>
+
+            <a className="btn btn-primary mb-2" role="button" href={authUrl}>Login with Bungie</a>
             <p>Display Name: {userData?.bungieNetUser.displayName}</p>
             <p>Bungie Membership ID: {localStorage.getItem("bungieMembershipId")}</p>
             <p>Primary Membership ID: {primaryMembershipId}</p>

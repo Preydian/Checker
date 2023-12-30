@@ -36,3 +36,16 @@
     transform: rotate(360deg);
   }
 }
+
+#App {
+  background-image: url("https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/34be9555-b667-4e7a-be3c-d19a4b0417d6/dba5ps8-59cbcecb-2293-431f-98b2-4f030e39f254.png/v1/fill/w_1024,h_576,q_80,strp/destiny_2___crucible_by_1337ninjasakura_dba5ps8-fullview.jpg?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7ImhlaWdodCI6Ijw9NTc2IiwicGF0aCI6IlwvZlwvMzRiZTk1NTUtYjY2Ny00ZTdhLWJlM2MtZDE5YTRiMDQxN2Q2XC9kYmE1cHM4LTU5Y2JjZWNiLTIyOTMtNDMxZi05OGIyLTRmMDMwZTM5ZjI1NC5wbmciLCJ3aWR0aCI6Ijw9MTAyNCJ9XV0sImF1ZCI6WyJ1cm46c2VydmljZTppbWFnZS5vcGVyYXRpb25zIl19.iJDB_Fk3sFHbnBpd5rtsPgL7SuAArFJeyQUR82ejuYY");
+  background-repeat: no-repeat;
+  background-size: cover; /* This will make the image cover the entire container */
+  background-position: center; /* Center the image */
+  width: 100vw;
+  height: 100vh;
+}
+
+.description {
+  color: whitesmoke;
+}

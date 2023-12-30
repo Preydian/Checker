@@ -227,13 +227,13 @@ const Checker = () => {
 
     return (
         <div>
-            <h2>
+            <h2 className="description d-flex align-content-center justify-content-center">
                 Welcome to Destiny Queue Checker
             </h2>
-            <p>
+            <p className="description">
                 How it works
             </p>
-            <ol>
+            <ol className="description">
                 <li>
                     Login
                 </li>
@@ -244,20 +244,24 @@ const Checker = () => {
                     Leave the tab running in the background
                 </li>
             </ol>
-            <p>
+            <p className="description">
                 When you change activity you will receive a notification telling you what activity is about to start.
                 <br/>
                 You will receive the first notification relatively quickly, this will be for your current activity.
             </p>
-
-            <a className="btn btn-primary mb-2" role="button" href={authUrl}>Login with Bungie</a>
-            <p>Display Name: {userData?.bungieNetUser.displayName}</p>
-            <p>Bungie Membership ID: {localStorage.getItem("bungieMembershipId")}</p>
-            <p>Primary Membership ID: {primaryMembershipId}</p>
-            <p>Primary Membership Type: {primaryMembershipType}</p>
+            <a className="btn btn-primary mb-2" role="button" href={authUrl}>
+                Login with Bungie
+            </a>
+            <div className="description">
+                <strong>Display Name: {userData?.bungieNetUser.displayName}</strong>
+            </div>
             <div style={{display: 'flex', alignItems: 'center'}}>
-                <strong style={{marginRight: '8px'}}>Playing:</strong>
-                <div>{currentActivity}</div>
+            <strong className="description" style={{marginRight: '8px'}}>
+                Playing:
+            </strong>
+                <div>
+                    {currentActivity}
+                </div>
             </div>
         </div>
     );

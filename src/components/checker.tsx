@@ -14,6 +14,7 @@ const Checker = () => {
     const [primaryMembershipId, setPrimaryMembershipId] = React.useState("")
     const [primaryMembershipType, setPrimaryMembershipType] = React.useState("")
     const [currentActivity, setCurrentActivity] = React.useState("")
+    const [newClient, setNewClient] = React.useState<boolean>(true)
 
     const [activityModeManifest, setActivityModeManifest] = React.useState<ActivityModes>()
     const [activityHash, setActivityHash] = React.useState<number>()
@@ -57,6 +58,7 @@ const Checker = () => {
                     const currentTimeSeconds: number = Math.floor(currentTimeMillis / 1000)
 
                     localStorage.setItem("tokenGrantedTime", String(currentTimeSeconds))
+                    setNewClient(false)
 
                 })
                 .catch(error => {
@@ -259,6 +261,7 @@ const Checker = () => {
                 const currentTimeSeconds: number = Math.floor(new Date().getTime() / 1000)
 
                 localStorage.setItem("tokenGrantedTime", String(currentTimeSeconds))
+                setNewClient(false)
 
             })
             .catch(error => {
@@ -276,13 +279,14 @@ const Checker = () => {
         localStorage.removeItem("accessToken")
         localStorage.removeItem("bungieMembershipId")
         localStorage.removeItem("refreshToken")
-        window.location.href = `https://www.bungie.net/en/oauth/authorize?client_id=45985&response_type=code&reauth=true`
+        window.location.href = `https://www.bungie.net/en/oauth/authorize?client_id=45985&response_type=code&reauth=${newClient}`
     }
 
     /**
      * Signs the user out by removing the required API information
      */
     const signOut = () => {
+        setNewClient(true)
         sessionStorage.removeItem("lastHash")
         sessionStorage.removeItem("lastTime")
         localStorage.removeItem("accessToken")

@@ -230,6 +230,11 @@ const Checker = () => {
     };
 
     const signIn = () => {
+        sessionStorage.removeItem("lastHash")
+        sessionStorage.removeItem("lastTime")
+        localStorage.removeItem("accessToken")
+        localStorage.removeItem("bungieMembershipId")
+        localStorage.removeItem("refreshToken")
         window.location.href = `https://www.bungie.net/en/oauth/authorize?client_id=45985&response_type=code&reauth=${newClient}`
     }
 
@@ -241,6 +246,7 @@ const Checker = () => {
         localStorage.removeItem("bungieMembershipId")
         localStorage.removeItem("refreshToken")
         navigate("/")
+        window.location.reload()
     }
 
     return (

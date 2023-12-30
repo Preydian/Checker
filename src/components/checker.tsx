@@ -252,14 +252,21 @@ const Checker = () => {
             <a className="btn btn-primary mb-2" role="button" href={authUrl}>
                 Login with Bungie
             </a>
-            <div className="description">
-                <strong>Display Name: {userData?.bungieNetUser.displayName}</strong>
-            </div>
+
             <div style={{display: 'flex', alignItems: 'center'}}>
-            <strong className="description" style={{marginRight: '8px'}}>
-                Playing:
-            </strong>
-                <div>
+                <strong className="description" style={{marginRight: '8px'}}>
+                    Display Name:
+                </strong>
+                <div className="description">
+                    {userData?.bungieNetUser.displayName}
+                </div>
+            </div>
+
+            <div style={{display: 'flex', alignItems: 'center'}}>
+                <strong className="description" style={{marginRight: '8px'}}>
+                    Playing:
+                </strong>
+                <div className="description">
                     {currentActivity}
                 </div>
             </div>

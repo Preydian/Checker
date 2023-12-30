@@ -7,7 +7,7 @@ const Checker = () => {
 
     const baseManifestUrl = "https://www.bungie.net/"
     const apiRoot = "https://www.bungie.net/Platform"
-    const authUrl = `https://www.bungie.net/en/oauth/authorize?client_id=45985&response_type=code`;
+    const tokenUrl = 'https://www.bungie.net/Platform/App/Oauth/Token/';
     const location = useLocation();
     const navigate = useNavigate()
 
@@ -32,7 +32,6 @@ const Checker = () => {
 
         if (authorizationCode) {
 
-            const tokenUrl = 'https://www.bungie.net/Platform/App/Oauth/Token/';
             const body = new URLSearchParams({
                 grant_type: "authorization_code",
                 code: authorizationCode,
@@ -50,6 +49,12 @@ const Checker = () => {
                     localStorage.setItem("accessToken",response.data["access_token"])
                     localStorage.setItem("bungieMembershipId",response.data["membership_id"])
                     localStorage.setItem("refreshToken",response.data["refresh_token"])
+                    localStorage.setItem("expiresIn",response.data["expires_in"])
+
+                    const currentTimeMillis: number = new Date().getTime();
+                    const currentTimeSeconds: number = Math.floor(currentTimeMillis / 1000)
+
+                    localStorage.setItem("tokenGrantedTime", String(currentTimeSeconds))
                     setNewClient(false)
 
                 })
@@ -102,8 +107,17 @@ const Checker = () => {
     }, [userData])
 
     React.useEffect(() => {
-        // Function to fetch data
+
         const fetchData = async () => {
+
+            const currentTimeMillis: number = new Date().getTime();
+            const currentTimeSeconds: number = Math.floor(currentTimeMillis / 1000)
+
+            if (currentTimeSeconds - Number(localStorage.getItem("tokenGrantedTime")) > (Number(localStorage.getItem("expiresIn")) - 10)) {
+                console.log("Refreshing token")
+                await refreshToken()
+            }
+
             if (primaryMembershipId !== "") {
                 try {
                     const response = await axios.get(`${apiRoot}/Destiny2/${primaryMembershipType}/Profile/${primaryMembershipId}/?components=204`, {
@@ -114,8 +128,10 @@ const Checker = () => {
                         }
                     });
 
+                    console.log(response.data["Response"])
+
                     setActivityData(response.data["Response"]);
-                    console.log(response.data["Response"]);
+
                 } catch (error) {
                     console.error('Error getting access token:', error);
                 }
@@ -229,6 +245,39 @@ const Checker = () => {
         }
     };
 
+    const refreshToken = async () => {
+
+        const body = new URLSearchParams({
+            grant_type: "refresh_token",
+            refresh_token: String(localStorage.getItem("refreshToken")),
+            client_id: "45985",
+            client_secret: "6siat6XMy81e.SF4ODpsot78zfI9G5zfG9npwAaJjK4"
+        }).toString()
+
+        await axios.post(tokenUrl, body, {
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }
+        })
+            .then(response => {
+
+                localStorage.setItem("accessToken",response.data["access_token"])
+                localStorage.setItem("bungieMembershipId",response.data["membership_id"])
+                localStorage.setItem("refreshToken",response.data["refresh_token"])
+
+                const currentTimeMillis: number = new Date().getTime();
+                const currentTimeSeconds: number = Math.floor(currentTimeMillis / 1000)
+
+                localStorage.setItem("tokenGrantedTime", String(currentTimeSeconds))
+                setNewClient(false)
+
+            })
+            .catch(error => {
+                console.error('Error getting access token:', error);
+            });
+
+    }
+
     const signIn = () => {
         sessionStorage.removeItem("lastHash")
         sessionStorage.removeItem("lastTime")
@@ -273,10 +322,10 @@ const Checker = () => {
                 <br/>
                 You will receive the first notification relatively quickly, this will be for your current activity.
             </p>
-            <div className="btn btn-primary m-2" role="button" onClick={(event) => signIn()}>
+            <div className="btn btn-primary m-2" role="button" onClick={() => signIn()}>
                 Login with Bungie
             </div>
-            <div className="btn btn-danger m-2" role="button" onClick={(event) => signOut()}>
+            <div className="btn btn-danger m-2" role="button" onClick={() => signOut()}>
                 Sign Out
             </div>
 

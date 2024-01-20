@@ -20,7 +20,7 @@ const showNotification = (activity: string) => {
             }
             default: {
                 notification = new Notification('My Notification', {
-                    body: `You have a ${activity} game!!`,
+                    body: `New ${activity} activity`,
                 });
                 break;
             }

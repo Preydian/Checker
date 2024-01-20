@@ -35,7 +35,6 @@ const Checker = () => {
             axios.get(`${apiRoot}/Destiny2/Manifest/`)
                 .then(response => {
 
-                    console.log(response.data)
                     setActivityModeManifestLink(response.data["Response"]["jsonWorldComponentContentPaths"]["en"]["DestinyActivityModeDefinition"])
 
                 })
@@ -207,7 +206,6 @@ const Checker = () => {
      */
     React.useEffect(() => {
 
-        console.log(activityModeManifestLink)
         axios.get(`${baseManifestUrl}${activityModeManifestLink}`)
             .then(response => {
 
@@ -359,7 +357,7 @@ const Checker = () => {
 
             <div style={{display: 'flex', alignItems: 'center'}}>
                 <strong className="description" style={{marginRight: '8px'}}>
-                    Playing:
+                    Activity:
                 </strong>
                 <div className="description">
                     {currentActivity}

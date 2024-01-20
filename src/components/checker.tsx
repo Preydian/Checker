@@ -16,6 +16,7 @@ const Checker = () => {
     const [currentActivity, setCurrentActivity] = React.useState("")
     const [newClient, setNewClient] = React.useState<boolean>(true)
 
+    const [activityModeManifestLink, setActivityModeManifestLink] = React.useState("")
     const [activityModeManifest, setActivityModeManifest] = React.useState<ActivityModes>()
     const [activityHash, setActivityHash] = React.useState<number>()
     const [activityModeHash, setActivityModeHash] = React.useState<number>()
@@ -23,6 +24,26 @@ const Checker = () => {
 
     const [userData, setUserData] = React.useState<membershipData>()
     const [activityData, setActivityData] = React.useState<activitiesComponent>()
+
+    /**
+     * Gets the link to the activity mode manifest JSON file
+     * Trigger: Initial page launch
+     */
+    React.useEffect(() => {
+
+        if (activityModeManifestLink == "") {
+            axios.get(`${apiRoot}/Destiny2/Manifest/`)
+                .then(response => {
+
+                    console.log(response.data)
+                    setActivityModeManifestLink(response.data["Response"]["jsonWorldComponentContentPaths"]["en"]["DestinyActivityModeDefinition"])
+
+                })
+                .catch(error => {
+                    console.error('Error getting access token:', error);
+                });
+        }
+    }, [])
 
     /**
      * Handles oAuth authorization
@@ -127,7 +148,7 @@ const Checker = () => {
 
             const currentTimeSeconds: number = Math.floor(new Date().getTime() / 1000)
 
-            if (currentTimeSeconds - Number(localStorage.getItem("tokenGrantedTime")) > (Number(localStorage.getItem("expiresIn")) - 10)) {
+            if (currentTimeSeconds - Number(localStorage.getItem("tokenGrantedTime")) >= (Number(localStorage.getItem("expiresIn")) - 10)) {
                 console.log("Refreshing token")
                 await refreshToken()
             }
@@ -186,7 +207,8 @@ const Checker = () => {
      */
     React.useEffect(() => {
 
-        axios.get(`${baseManifestUrl}/common/destiny2_content/json/en/DestinyActivityModeDefinition-a160e00f-0743-4edb-a4d6-86452656ed54.json`)
+        console.log(activityModeManifestLink)
+        axios.get(`${baseManifestUrl}${activityModeManifestLink}`)
             .then(response => {
 
                 setActivityModeManifest(response.data)
@@ -267,7 +289,6 @@ const Checker = () => {
             .catch(error => {
                 console.error('Error getting access token:', error);
             });
-
     }
 
     /**

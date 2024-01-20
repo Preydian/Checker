@@ -58,8 +58,8 @@ const Checker = () => {
             const body = new URLSearchParams({
                 grant_type: "authorization_code",
                 code: authorizationCode,
-                client_id: "45985",
-                client_secret: "6siat6XMy81e.SF4ODpsot78zfI9G5zfG9npwAaJjK4"
+                client_id: `${process.env.REACT_APP_CLIENT_ID}`,
+                client_secret: `${process.env.REACT_APP_CLIENT_SECRET}`
             }).toString()
 
             axios.post(tokenUrl, body, {
@@ -98,7 +98,7 @@ const Checker = () => {
             axios.get(`${apiRoot}/User/GetMembershipsById/${bungieMembershipId}/${254}/`, {
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
-                    'X-API-Key': 'dcf079d10b534c00b8b9f772a1503dd9'
+                    'X-API-Key': process.env.REACT_APP_API_KEY
                 }
             })
                 .then(response => {
@@ -157,7 +157,7 @@ const Checker = () => {
                     const response = await axios.get(`${apiRoot}/Destiny2/${primaryMembershipType}/Profile/${primaryMembershipId}/?components=204`, {
                         headers: {
                             'Content-Type': 'application/x-www-form-urlencoded',
-                            'X-API-Key': 'dcf079d10b534c00b8b9f772a1503dd9',
+                            'X-API-Key': process.env.REACT_APP_API_KEY,
                             'Authorization': `Bearer ${localStorage.getItem("accessToken")}`
                         }
                     });
@@ -263,8 +263,8 @@ const Checker = () => {
         const body = new URLSearchParams({
             grant_type: "refresh_token",
             refresh_token: String(localStorage.getItem("refreshToken")),
-            client_id: "45985",
-            client_secret: "6siat6XMy81e.SF4ODpsot78zfI9G5zfG9npwAaJjK4"
+            client_id: `${process.env.REACT_APP_CLIENT_ID}`,
+            client_secret: `${process.env.REACT_APP_CLIENT_SECRET}`
         }).toString()
 
         await axios.post(tokenUrl, body, {
@@ -298,7 +298,7 @@ const Checker = () => {
         localStorage.removeItem("accessToken")
         localStorage.removeItem("bungieMembershipId")
         localStorage.removeItem("refreshToken")
-        window.location.href = `https://www.bungie.net/en/oauth/authorize?client_id=45985&response_type=code&reauth=${newClient}`
+        window.location.href = `https://www.bungie.net/en/oauth/authorize?client_id=${process.env.REACT_APP_CLIENT_ID}&response_type=code&reauth=${newClient}`
     }
 
     /**

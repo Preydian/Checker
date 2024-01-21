@@ -3,6 +3,7 @@ import React from "react";
 import {useLocation, useNavigate} from "react-router-dom";
 import {showNotification} from "../helpers/notification";
 import {apiRoot, baseManifestUrl, tokenUrl} from "../helpers/constants";
+import {formatTime} from "../helpers/format";
 
 
 const Checker = () => {
@@ -10,6 +11,9 @@ const Checker = () => {
 
     const location = useLocation();
     const navigate = useNavigate()
+    const [timeLeft, setTimeLeft] = React.useState<number>(sessionStorage.getItem("timeLeft") == null ? 600 : Number(sessionStorage.getItem("timeLeft")));
+    const [matchMaking, setMatchMaking] = React.useState<boolean>(sessionStorage.getItem("matchMaking") == "true");
+
 
     const [primaryMembershipId, setPrimaryMembershipId] = React.useState("")
     const [primaryMembershipType, setPrimaryMembershipType] = React.useState("")
@@ -43,6 +47,28 @@ const Checker = () => {
                 });
         }
     }, [])
+
+    /**
+     * Updates the timer, if timer runs out calls showNotification
+     */
+    React.useEffect(() => {
+        if (!matchMaking) { // If not matchmaking return early
+            return
+        }
+        const timer = setInterval(() => { // Create a 1-second timer interval
+            if (timeLeft > 0) {
+                setTimeLeft(timeLeft - 1);
+                sessionStorage.setItem("timeLeft", String(timeLeft - 1))
+            } else if (timeLeft == 0) {
+                setMatchMaking(false)
+                sessionStorage.setItem("matchMaking", String(false))
+                showNotification("Mongoose")
+                clearInterval(timer);
+            }
+        }, 1000);
+
+        return () => clearInterval(timer);
+    }, [matchMaking, timeLeft]);
 
     /**
      * Handles oAuth authorization
@@ -315,6 +341,18 @@ const Checker = () => {
         window.location.reload()
     }
 
+    /**
+     * Toggles the match making state
+     * Used for buttons and to stop the timer
+     */
+    const toggleMatchMaking = () => {
+        setTimeLeft(600)
+        setMatchMaking(!matchMaking)
+        sessionStorage.setItem("matchMaking", String(!matchMaking))
+        sessionStorage.setItem("timeLeft", String(600))
+
+    }
+
     return (
         <div>
             <h2 className="description d-flex align-content-center justify-content-center">
@@ -363,7 +401,32 @@ const Checker = () => {
                     {currentActivity}
                 </div>
             </div>
+            <div className="container mt-5">
+                <div className="row justify-content-center">
+                    <div className="col-md-6">
+                        <div className="card text-center">
+                            <div className="card-header">Time until Mongoose Error Code</div>
+                            <div className="card-body">
+                                <h1>{formatTime(timeLeft)}</h1>
+                            </div>
+                            <div className="card-footer">
+                                {matchMaking &&
+                                    <div className="btn btn-warning m-2" role="button" onClick={() => toggleMatchMaking()}>
+                                        Stopped Matchmaking
+                                    </div>
+                                }
+                                {!matchMaking &&
+                                    <div className="btn btn-info m-2" role="button" onClick={() => toggleMatchMaking()}>
+                                        Started Matchmaking
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
+
     );
 }
 

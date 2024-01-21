@@ -18,6 +18,12 @@ const showNotification = (activity: string) => {
                 });
                 break;
             }
+            case "Mongoose": {
+                notification = new Notification('My Notification', {
+                    body: `You've been Mongoose Error Coded`,
+                });
+                break;
+            }
             default: {
                 notification = new Notification('My Notification', {
                     body: `New ${activity} activity`,

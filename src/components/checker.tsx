@@ -274,8 +274,7 @@ const Checker = () => {
                 showNotification("Social")
             }
 
-            setMatchMaking(false)
-            sessionStorage.setItem("matchMaking", String(false))
+            resetMatchMaking()
             sessionStorage.setItem("lastTime", String(activityTime))
 
         }
@@ -320,6 +319,7 @@ const Checker = () => {
      * Redirects the user to the bungie sign in client and removes API information just in case
      */
     const signIn = () => {
+        resetMatchMaking()
         sessionStorage.removeItem("lastHash")
         sessionStorage.removeItem("lastTime")
         localStorage.removeItem("accessToken")
@@ -333,6 +333,7 @@ const Checker = () => {
      */
     const signOut = () => {
         setNewClient(true)
+        resetMatchMaking()
         sessionStorage.removeItem("lastHash")
         sessionStorage.removeItem("lastTime")
         localStorage.removeItem("accessToken")
@@ -352,6 +353,17 @@ const Checker = () => {
         sessionStorage.setItem("matchMaking", String(!matchMaking))
         sessionStorage.setItem("timeLeft", String(600))
 
+    }
+
+    /**
+     * Resets the matchmaking variables
+     * Used for buttons and to stop the timer
+     */
+    const resetMatchMaking = () => {
+        setMatchMaking(false)
+        sessionStorage.setItem("matchMaking", String(false))
+        sessionStorage.setItem("timeLeft", String(600))
+        setTimeLeft(600)
     }
 
     return (

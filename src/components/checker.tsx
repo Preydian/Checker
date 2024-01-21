@@ -14,7 +14,6 @@ const Checker = () => {
     const [timeLeft, setTimeLeft] = React.useState<number>(sessionStorage.getItem("timeLeft") == null ? 600 : Number(sessionStorage.getItem("timeLeft")));
     const [matchMaking, setMatchMaking] = React.useState<boolean>(sessionStorage.getItem("matchMaking") == "true");
 
-
     const [primaryMembershipId, setPrimaryMembershipId] = React.useState("")
     const [primaryMembershipType, setPrimaryMembershipType] = React.useState("")
     const [currentActivity, setCurrentActivity] = React.useState("")
@@ -260,23 +259,25 @@ const Checker = () => {
                 console.log(`Playing ${activityModeManifest[activityModeHash].friendlyName}`)
                 setCurrentActivity(activityModeManifest[activityModeHash].friendlyName)
                 sessionStorage.setItem("lastHash", String(activityModeHash))
-                sessionStorage.setItem("lastTime", String(activityTime))
                 showNotification(activityModeManifest[activityModeHash].friendlyName)
 
             } else if (activityModeHash === 2166136261 && Number(sessionStorage.getItem("lastTime")) <= activityTime && sessionStorage.getItem("lastHash") !== "Orbit") {
                 console.log(`In orbit`)
                 setCurrentActivity("Orbit")
                 sessionStorage.setItem("lastHash", "Orbit")
-                sessionStorage.setItem("lastTime", String(activityTime))
                 showNotification("Orbit")
 
             } else if (activityModeHash === 1589650888 && Number(sessionStorage.getItem("lastTime")) <= activityTime && sessionStorage.getItem("lastHash") !== "Social") {
                 console.log(`In a Social Area`)
                 setCurrentActivity("Social")
                 sessionStorage.setItem("lastHash", "Social")
-                sessionStorage.setItem("lastTime", String(activityTime))
                 showNotification("Social")
             }
+
+            setMatchMaking(false)
+            sessionStorage.setItem("matchMaking", String(false))
+            sessionStorage.setItem("lastTime", String(activityTime))
+
         }
 
     }, [activityModeManifest])

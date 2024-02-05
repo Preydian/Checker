@@ -396,7 +396,9 @@ const Checker = () => {
             <div className="btn btn-danger m-2" role="button" onClick={() => signOut()}>
                 Sign Out
             </div>
-
+            <div className="btn btn-primary m-2" role="button" onClick={() => showNotification("Test")}>
+                Test notification
+            </div>
             <div style={{display: 'flex', alignItems: 'center'}}>
                 <strong className="description" style={{marginRight: '8px'}}>
                     Display Name:
